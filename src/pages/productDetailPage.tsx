@@ -3,6 +3,7 @@ import { Link, useParams } from "react-router-dom";
 import axios from "axios";
 import { ArrowLeft, Star } from "lucide-react";
 import type { Product } from "../components/productCard";
+import { useCartStore } from "../store/cartStore";
 
 type Review = {
   rating: number;
@@ -34,8 +35,10 @@ const Stars = ({ rating }: { rating: number }) => (
 );
 
 export const ProductDetailPage = () => {
-  const { id } = useParams<{ id: string }>();
-
+  const params = useParams<{ id: string }>();
+  const id = Number(params.id);
+  const { addToCart, updateQuantity, items } = useCartStore();
+  const existing = items.find((item) => item.product.id === id);
   const [product, setProduct] = useState<ProductDetail | null>(null);
   const [selectedImage, setSelectedImage] = useState("");
   const [loading, setLoading] = useState(true);
@@ -161,12 +164,36 @@ export const ProductDetailPage = () => {
                 : "In stock"}
           </p>
 
-          <button
-            disabled={outOfStock}
-            className="mt-2 rounded-lg bg-blue-700 px-6 py-3 text-white transition hover:bg-blue-800 cursor-pointer disabled:cursor-not-allowed disabled:bg-gray-300"
-          >
-            {outOfStock ? "Out of stock" : "Add to cart"}
-          </button>
+          {existing ? (
+            <div className="mt-2 flex w-fit items-center gap-4 rounded-lg  px-2 py-2">
+              <button
+                onClick={() => updateQuantity(id, existing.quantity - 1)}
+                aria-label="Decrease quantity"
+                className="flex h-8 w-8 font-bold text-2xl cursor-pointer items-center justify-center rounded-md bg-gray-100 hover:bg-gray-200"
+              >
+                -
+              </button>
+              <span className="min-w-6 text-center font-medium">
+                {existing.quantity}
+              </span>
+              <button
+                onClick={() => updateQuantity(id, existing.quantity + 1)}
+                disabled={existing.quantity >= product.stock}
+                aria-label="Increase quantity"
+                className="flex h-8 w-8 font-bold text-2xl cursor-pointer items-center justify-center rounded-md bg-gray-100 hover:bg-gray-200 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                +
+              </button>
+            </div>
+          ) : (
+            <button
+              onClick={() => addToCart(product)}
+              disabled={outOfStock}
+              className="mt-2 rounded-lg bg-blue-700 px-6 py-3 text-white transition hover:bg-blue-800 cursor-pointer disabled:cursor-not-allowed disabled:bg-gray-300"
+            >
+              {outOfStock ? "Out of stock" : "Add to cart"}
+            </button>
+          )}
         </div>
       </div>
 
