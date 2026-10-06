@@ -6,10 +6,11 @@ import { Layout } from "./components/layout";
 function App() {
   return (
     <Routes>
-      <Route element={<Layout/>}>
-      <Route path="/" element={<ProductListPage />} />
-      <Route path="/product/:id" element={<ProductDetailPage />} />
-      <Route path="/cart" element={<CartPage />} /></Route>
+      <Route element={<Layout />}>
+        <Route path="/" element={<ProductListPage />} />
+        <Route path="/products/:id" element={<ProductDetailPage />} />
+        <Route path="/cart" element={<CartPage />} />
+      </Route>
     </Routes>
   );
 }
