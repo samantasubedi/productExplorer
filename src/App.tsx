@@ -1,15 +1,16 @@
-import { useState } from "react";
-import heroImg from "./assets/hero.png";
-import reactLogo from "./assets/react.svg";
-import viteLogo from "./assets/vite.svg";
-
+import { Route, Routes } from "react-router-dom";
+import { ProductListPage } from "./pages/productListPage";
+import { CartPage } from "./pages/cartPage";
+import { ProductDetailPage } from "./pages/productDetailPage";
+import { Layout } from "./components/layout";
 function App() {
-  const [count, setCount] = useState(0);
-
   return (
-    <>
-      <div>hello</div>
-    </>
+    <Routes>
+      <Route element={<Layout/>}>
+      <Route path="/" element={<ProductListPage />} />
+      <Route path="/product/:id" element={<ProductDetailPage />} />
+      <Route path="/cart" element={<CartPage />} /></Route>
+    </Routes>
   );
 }
 
