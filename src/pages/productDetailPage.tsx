@@ -4,6 +4,7 @@ import axios from "axios";
 import { ArrowLeft, Star } from "lucide-react";
 import type { Product } from "../components/productCard";
 import { useCartStore } from "../store/cartStore";
+import { ProductDetailSkeleton } from "../components/loadingSkeleton";
 
 type Review = {
   rating: number;
@@ -75,7 +76,7 @@ export const ProductDetailPage = () => {
     return () => controller.abort();
   }, [id]);
 
-  if (loading) return <p className="p-6">Loading...</p>;
+  if (loading) return <ProductDetailSkeleton />;
   if (error || !product)
     return (
       <p className="p-6 text-red-600">{error ?? "Something went wrong"}</p>

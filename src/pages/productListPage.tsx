@@ -1,6 +1,7 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { ProductCard, type Product } from "../components/productCard";
+import {ProductListSkeleton} from "../components/loadingSkeleton";
 
 export const ProductListPage = () => {
   const [products, setProducts] = useState<Product[]>([]);
@@ -25,14 +26,16 @@ export const ProductListPage = () => {
           }
         }
       } finally {
-        setLoading(false);
+        if (!controller.signal.aborted) {
+          setLoading(false);
+        }
       }
     };
     fetchProducts();
     return () => controller.abort();
   }, []);
   if (loading) {
-    return <div>loading...</div>;
+    return <ProductListSkeleton count={10} />;
   }
   if (error) {
     return <div>error</div>;
