@@ -1,5 +1,6 @@
 import { Star } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useCartStore } from "../store/cartStore";
 
 export type Product = {
   id: number;
@@ -18,6 +19,11 @@ type ProductCardProps = {
 
 export const ProductCard = ({ product }: ProductCardProps) => {
   const outOfStock = product.stock === 0;
+  const cartItems = useCartStore((state) => state.items);
+  const existing = cartItems.find((item) => item.product.id == product.id);
+  const updateQuantity = useCartStore((state) => state.updateQuantity);
+  const addToCart = useCartStore((state) => state.addToCart);
+
   return (
     <div className="group flex flex-col overflow-hidden rounded-xl border border-gray-300 bg-white shadow-sm transition hover:shadow-md">
       <Link
@@ -57,9 +63,41 @@ export const ProductCard = ({ product }: ProductCardProps) => {
           <span className="text-lg font-semibold">
             ${product.price.toFixed(2)}
           </span>
-          <button className="rounded-lg bg-blue-700 px-3 py-1.5 text-sm text-white transition cursor-pointer hover:bg-blue-800 disabled:cursor-not-allowed disabled:bg-gray-300">
-            {outOfStock ? "Out of stock" : "Add to cart"}
-          </button>
+
+          {existing ? (
+            <div className="mt-2 flex w-fit items-center gap-4 rounded-lg  px-2 py-2">
+              <button
+                onClick={() =>
+                  updateQuantity(product.id, existing.quantity - 1)
+                }
+                aria-label="Decrease quantity"
+                className="flex h-8 w-8 font-bold text-2xl cursor-pointer items-center justify-center rounded-md bg-gray-100 hover:bg-gray-200"
+              >
+                -
+              </button>
+              <span className="min-w-6 text-center font-medium">
+                {existing.quantity}
+              </span>
+              <button
+                onClick={() =>
+                  updateQuantity(product.id, existing.quantity + 1)
+                }
+                disabled={existing.quantity >= product.stock}
+                aria-label="Increase quantity"
+                className="flex h-8 w-8 font-bold text-2xl cursor-pointer items-center justify-center rounded-md bg-gray-100 hover:bg-gray-200 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                +
+              </button>
+            </div>
+          ) : (
+            <button
+              onClick={() => addToCart(product)}
+              disabled={outOfStock}
+              className="mt-2 rounded-lg bg-blue-700 px-6 py-3 text-white transition hover:bg-blue-800 cursor-pointer disabled:cursor-not-allowed disabled:bg-gray-300"
+            >
+              {outOfStock ? "Out of stock" : "Add to cart"}
+            </button>
+          )}
         </div>
       </div>
     </div>

@@ -1,7 +1,10 @@
 import { Link, Outlet } from "react-router-dom";
 import { ShoppingCart } from "lucide-react";
+import { useCartStore } from "../store/cartStore";
+import { selectTotalItems } from "../store/cartStore";
 
 export const Layout = () => {
+  const totalItems = useCartStore(selectTotalItems);
   return (
     <div className="min-h-screen flex flex-col">
       <nav className="flex items-center justify-between px-6 py-4 border-b border-gray-300 bg-gray-100 sticky top-0 z-10">
@@ -10,8 +13,13 @@ export const Layout = () => {
             Product Explorer
           </span>
         </Link>
-        <Link className="cursor-pointer" to="/cart">
+        <Link to="/cart" aria-label="Cart" className="relative cursor-pointer">
           <ShoppingCart />
+          {totalItems > 0 && (
+            <span className="absolute -right-2 -top-2 flex h-5 min-w-5 items-center justify-center rounded-full bg-gray-700 px-1 text-xs text-white">
+              {totalItems}
+            </span>
+          )}
         </Link>
       </nav>
       <main>
