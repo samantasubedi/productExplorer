@@ -1,17 +1,8 @@
 import { Star } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useCartStore } from "../store/cartStore";
+import type { Product } from "../types/product";
 
-export type Product = {
-  id: number;
-  title: string;
-  thumbnail: string;
-  category: string;
-  price: number;
-  rating: number;
-  discountPercentage: number;
-  stock: number;
-};
 
 type ProductCardProps = {
   product: Product;

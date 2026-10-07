@@ -1,24 +1,12 @@
-import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import axios from "axios";
+
 import { ArrowLeft, Star } from "lucide-react";
-import type { Product } from "../components/productCard";
 import { useCartStore } from "../store/cartStore";
 import { ProductDetailSkeleton } from "../components/loadingSkeleton";
 
-type Review = {
-  rating: number;
-  comment: string;
-  date: string;
-  reviewerName: string;
-};
-
-type ProductDetail = Product & {
-  description: string;
-  brand?: string;
-  images: string[];
-  reviews: Review[];
-};
+import { useProduct } from "../hooks/productHooks";
+import { ErrorState } from "../components/errorState";
+import { useState } from "react";
 
 const Stars = ({ rating }: { rating: number }) => (
   <div className="flex items-center gap-0.5">
@@ -40,46 +28,19 @@ export const ProductDetailPage = () => {
   const id = Number(params.id);
   const { addToCart, updateQuantity, items } = useCartStore();
   const existing = items.find((item) => item.product.id === id);
-  const [product, setProduct] = useState<ProductDetail | null>(null);
-  const [selectedImage, setSelectedImage] = useState("");
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    const controller = new AbortController();
-
-    const fetchProduct = async () => {
-      setLoading(true);
-      setError(null);
-
-      try {
-        const res = await axios.get<ProductDetail>(
-          `https://dummyjson.com/products/${id}`,
-          { signal: controller.signal },
-        );
-        setProduct(res.data);
-        setSelectedImage(res.data.images[0] ?? res.data.thumbnail);
-      } catch (err) {
-        if (axios.isCancel(err)) return;
-        if (axios.isAxiosError(err) && err.response?.status === 404) {
-          setError("Product not found");
-        } else {
-          setError("Failed to load product");
-        }
-      } finally {
-        if (!controller.signal.aborted) setLoading(false);
-      }
-    };
-
-    fetchProduct();
-
-    return () => controller.abort();
-  }, [id]);
+  const { loading, error, product, retry } = useProduct(id);
+  const [selectedImage, setSelectedImage] = useState<string>("");
+  const [prevId, setPrevId] = useState<number | null>(null);
+  if (product && prevId !== product.id) {
+    setPrevId(id);
+    setSelectedImage(product?.images[0] ?? product?.thumbnail);
+  }
 
   if (loading) return <ProductDetailSkeleton />;
   if (error || !product)
     return (
-      <p className="p-6 text-red-600">{error ?? "Something went wrong"}</p>
+      <ErrorState message={error ?? "Something went wrong"} onRetry={retry} />
     );
 
   const outOfStock = product.stock === 0;

@@ -1,10 +1,11 @@
 import { create } from "zustand";
-import type { Product } from "../components/productCard";
+
 export type CartItem = {
   product: Product;
   quantity: number;
 };
 import { persist } from "zustand/middleware";
+import type { Product } from "../types/product";
 type CartState = {
   items: CartItem[];
   addToCart: (product: Product) => void;
@@ -74,5 +75,14 @@ export const useCartStore = create<CartState>()(
 export const selectTotalItems = (state: CartState) =>
   state.items.reduce((sum, i) => sum + i.quantity, 0);
 
-export const selectTotalPrice = (state: CartState) =>
-  state.items.reduce((sum, i) => sum + i.product.price * i.quantity, 0);
+export const selectSubtotal = (s: CartState) =>
+  s.items.reduce((sum, i) => sum + i.product.price * i.quantity, 0);
+
+export const selectDiscount = (s: CartState) =>
+  s.items.reduce(
+    (sum, { product, quantity }) =>
+      sum + (product.price * quantity * product.discountPercentage) / 100,
+    0,
+  );
+export const selectTotal = (s: CartState) =>
+  selectSubtotal(s) - selectDiscount(s);

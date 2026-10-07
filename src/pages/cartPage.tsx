@@ -1,18 +1,20 @@
 import { Link } from "react-router-dom";
 import { Minus, Plus, Trash2 } from "lucide-react";
-import { selectTotalPrice, useCartStore } from "../store/cartStore";
+import {
+  selectDiscount,
+  selectSubtotal,
+  selectTotal,
+  useCartStore,
+} from "../store/cartStore";
 
 export const CartPage = () => {
   const items = useCartStore((state) => state.items);
   const updateQuantity = useCartStore((state) => state.updateQuantity);
   const removeFromCart = useCartStore((state) => state.removeFromCart);
   const clearCart = useCartStore((state) => state.clearCart);
-  const subtotal = useCartStore(selectTotalPrice);
-
-  const discount = items.reduce((sum, { product, quantity }) => {
-    return sum + (product.price * quantity * product.discountPercentage) / 100;
-  }, 0);
-  const total = subtotal - discount;
+  const subtotal = useCartStore(selectSubtotal);
+  const discount = useCartStore(selectDiscount);
+  const total = useCartStore(selectTotal);
 
   if (items.length === 0) {
     return (

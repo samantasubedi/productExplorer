@@ -1,68 +1,33 @@
-import axios from "axios";
 import { useEffect, useState } from "react";
-import { ProductCard, type Product } from "../components/productCard";
+import { ProductCard } from "../components/productCard";
 import { ProductListSkeleton } from "../components/loadingSkeleton";
 import { useSearchParams } from "react-router-dom";
 
+import { useDebouncedValue } from "../hooks/debounceHook";
+import { useProducts } from "../hooks/productHooks";
+import { ErrorState } from "../components/errorState";
+
 export const ProductListPage = () => {
-  const [products, setProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [searchParams, setSearchParams] = useSearchParams();
   const searchText = searchParams.get("q") ?? "";
   const [searchInput, setSearchInput] = useState<string>(searchText);
-
+  const debouncedInput = useDebouncedValue(searchInput, 400);
   useEffect(() => {
-    const controller = new AbortController();
-    const fetchProducts = async () => {
-      try {
-        setLoading(true);
-        setError(null);
-        const response = await axios.get(
-          `https://dummyjson.com/products${searchText ? "/search" : ""}`,
-          {
-            params: { ...(searchText ? { q: searchText } : {}), limit: 10 },
-            signal: controller.signal,
-          },
-        );
-        setProducts(response.data.products);
-      } catch (err) {
-        if (!axios.isCancel(err)) {
-          if (err instanceof Error) {
-            setError(err.message);
-          } else {
-            setError("couldn't fetch products");
-          }
-        }
-      } finally {
-        if (!controller.signal.aborted) {
-          setLoading(false);
-        }
+    const next = debouncedInput.trim();
+    if (next === searchText) return;
+    setSearchParams((prev) => {
+      const param = new URLSearchParams(prev);
+      if (next) {
+        param.set("q", next);
+      } else {
+        param.delete("q");
       }
-    };
-    fetchProducts();
-    return () => controller.abort();
-  }, [searchText]);
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      if (searchInput.trim() == searchText) {
-        return;
-      }
-      setSearchParams(
-        (prev) => {
-          const param = new URLSearchParams(prev);
-          if (searchInput.trim()) {
-            param.set("q", searchInput.trim());
-          } else {
-            param.delete("q");
-          }
-          return param;
-        },
-        { replace: true },
-      );
-    }, 400);
-    return () => clearTimeout(timer);
-  }, [searchInput, searchText, setSearchParams]);
+      return param;
+    });
+  }, [debouncedInput, searchText, setSearchParams]);
+  const { products, loading, error, retry } = useProducts({
+    search: searchText,
+  });
 
   return (
     <div>
@@ -77,7 +42,7 @@ export const ProductListPage = () => {
         }}
       />
       {error ? (
-        <div>{error}</div>
+        <ErrorState message={error ?? "something went wrong"} onRetry={retry} />
       ) : loading ? (
         <ProductListSkeleton />
       ) : products.length === 0 ? (
