@@ -1,4 +1,5 @@
 import { useCategory } from "../hooks/productHooks";
+import { FilterSelect } from "./filterSelect";
 
 type Props = {
   value: string;
@@ -20,22 +21,16 @@ export const CategoryFilter = ({ value, onCategoryChange }: Props) => {
   }
 
   return (
-    <label className="flex items-center gap-2 text-sm">
-      <span className="text-gray-600">Category:</span>
-      <select
-        aria-label="Filter by category"
-        value={value}
-        disabled={loading}
-        onChange={(e) => onCategoryChange(e.target.value)}
-        className="rounded-lg border border-gray-300 bg-white px-3 py-2 disabled:opacity-50"
-      >
-        <option value="">{loading ? "Loading…" : "All categories"}</option>
-        {categories.map((c) => (
-          <option key={c.slug} value={c.slug}>
-            {c.name}
-          </option>
-        ))}
-      </select>
-    </label>
+    <FilterSelect
+      label="Category:"
+      ariaLabel="Filter by category"
+      value={value}
+      disabled={loading}
+      options={[
+        { value: "", label: loading ? "Loading…" : "All categories" },
+        ...categories.map((c) => ({ value: c.slug, label: c.name })),
+      ]}
+      onChange={onCategoryChange}
+    />
   );
 };

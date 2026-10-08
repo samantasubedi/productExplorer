@@ -47,7 +47,7 @@ export const ProductDetailPage = () => {
   const lowStock = product.stock > 0 && product.stock <= 5;
 
   return (
-    <div className="mx-auto max-w-7xl p-6">
+    <div className="mx-auto max-w-7xl p-4 sm:p-6">
       <Link
         to="/"
         className="mb-6 inline-flex items-center gap-1 text-sm text-gray-600 hover:text-black"
@@ -56,7 +56,7 @@ export const ProductDetailPage = () => {
         Back to products
       </Link>
 
-      <div className="grid gap-10 md:grid-cols-2">
+      <div className="grid gap-6 md:grid-cols-2 md:gap-10">
         <div>
           <div className="aspect-square overflow-hidden rounded-xl  bg-gray-100">
             <img
@@ -88,9 +88,9 @@ export const ProductDetailPage = () => {
           <p className="text-xs uppercase tracking-wide text-gray-500">
             {product.category}
           </p>
-          <h1 className="text-3xl font-bold">{product.title}</h1>
+          <h1 className="text-2xl font-bold sm:text-3xl">{product.title}</h1>
 
-          <div className="flex items-center gap-2 text-sm text-gray-600">
+          <div className="flex flex-wrap items-center gap-2 text-sm text-gray-600">
             <Stars rating={product.rating} />
             <span>
               {product.rating.toFixed(1)} ({product.reviews.length} reviews)
@@ -98,7 +98,7 @@ export const ProductDetailPage = () => {
           </div>
 
           <div className="flex items-center gap-3">
-            <span className="text-3xl font-semibold">
+            <span className="text-2xl font-semibold sm:text-3xl">
               ${product.price.toFixed(2)}
             </span>
             {product.discountPercentage > 0 && (
@@ -151,7 +151,7 @@ export const ProductDetailPage = () => {
             <button
               onClick={() => addToCart(product)}
               disabled={outOfStock}
-              className="mt-2 rounded-lg bg-blue-700 px-6 py-3 text-white transition hover:bg-blue-800 cursor-pointer disabled:cursor-not-allowed disabled:bg-gray-300"
+              className="mt-2 w-full rounded-lg bg-blue-700 px-6 py-3 text-white transition hover:bg-blue-800 cursor-pointer disabled:cursor-not-allowed disabled:bg-gray-300 sm:w-auto"
             >
               {outOfStock ? "Out of stock" : "Add to cart"}
             </button>
@@ -159,7 +159,7 @@ export const ProductDetailPage = () => {
         </div>
       </div>
 
-      <section className="mt-12">
+      <section className="mt-8 sm:mt-12">
         <h2 className="mb-4 text-xl font-semibold">Reviews</h2>
         {product.reviews.length === 0 ? (
           <p className="text-gray-500">No reviews yet.</p>
@@ -167,7 +167,7 @@ export const ProductDetailPage = () => {
           <ul className="space-y-4">
             {product.reviews.map((review, i) => (
               <li key={i} className="rounded-xl bg-gray-100 p-4">
-                <div className="flex items-center justify-between">
+                <div className="flex flex-wrap items-center justify-between gap-2">
                   <div className="flex items-center gap-3">
                     <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-300 font-semibold text-gray-700">
                       {review.reviewerName.charAt(0).toUpperCase()}

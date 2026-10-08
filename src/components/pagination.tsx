@@ -58,7 +58,7 @@ export const Pagination = ({ page, totalPages, onChange }: Props) => {
   return (
     <nav
       aria-label="Pagination"
-      className="flex flex-wrap items-center justify-center gap-1.5 p-6"
+      className="flex flex-wrap items-center justify-center gap-1.5 p-4 sm:p-6"
     >
       <button
         type="button"

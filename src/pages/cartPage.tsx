@@ -18,7 +18,7 @@ export const CartPage = () => {
 
   if (items.length === 0) {
     return (
-      <div className="mx-auto max-w-7xl p-6 text-center">
+      <div className="mx-auto max-w-7xl p-4 text-center sm:p-6">
         <h1 className="text-2xl font-bold">Your cart is empty</h1>
         <p className="mt-2 text-gray-600">
           Looks like you haven't added anything yet.
@@ -34,8 +34,8 @@ export const CartPage = () => {
   }
 
   return (
-    <div className="mx-auto max-w-7xl p-6">
-      <div className="mb-4  flex items-center justify-between sticky top-22 backdrop-blur-3xl bg-white z-10">
+    <div className="mx-auto max-w-7xl p-4 sm:p-6">
+      <div className="mb-4 flex items-center justify-between sticky top-14 backdrop-blur-3xl bg-white z-10">
         <h1 className="text-2xl font-bold">Shopping cart</h1>
         <button
           onClick={clearCart}
@@ -45,16 +45,16 @@ export const CartPage = () => {
         </button>
       </div>
 
-      <div className="grid gap-8 lg:grid-cols-3">
+      <div className="grid gap-6 lg:grid-cols-3 lg:gap-8">
         <ul className="space-y-4 lg:col-span-2">
           {items.map(({ product, quantity }) => (
             <li
               key={product.id}
-              className="flex gap-4 rounded-xl bg-gray-100 p-4"
+              className="flex gap-3 rounded-xl bg-gray-100 p-3 sm:gap-4 sm:p-4"
             >
               <Link
                 to={`/products/${product.id}`}
-                className="h-24 w-24 shrink-0 overflow-hidden rounded-lg bg-white"
+                className="h-20 w-20 shrink-0 overflow-hidden rounded-lg bg-white sm:h-24 sm:w-24"
               >
                 <img
                   src={product.thumbnail}
@@ -85,7 +85,7 @@ export const CartPage = () => {
                   </button>
                 </div>
 
-                <div className="flex items-center justify-between">
+                <div className="flex flex-wrap items-center justify-between gap-2">
                   <div className="flex items-center gap-3 rounded-lg bg-white px-2 py-1">
                     <button
                       onClick={() => updateQuantity(product.id, quantity - 1)}
@@ -116,7 +116,7 @@ export const CartPage = () => {
           ))}
         </ul>
 
-        <aside className="h-fit rounded-xl bg-gray-100 p-6 sticky top-37">
+        <aside className="h-fit rounded-xl bg-gray-100 p-4 sm:p-6 lg:sticky lg:top-24">
           <h2 className="mb-4 text-lg font-semibold">Order summary</h2>
           <div className="space-y-2 text-sm">
             <div className="flex justify-between">

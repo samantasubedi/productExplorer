@@ -6,8 +6,8 @@ import { selectTotalItems } from "../store/cartStore";
 export const Layout = () => {
   const totalItems = useCartStore(selectTotalItems);
   return (
-    <div className="min-h-screen flex flex-col">
-      <nav className="flex items-center justify-between px-6 py-4 border-b border-gray-300 bg-gray-100 sticky top-0 z-10">
+    <div className="min-h-screen flex flex-col min-w-0 overflow-x-clip">
+      <nav className="flex items-center justify-between px-4 py-4 border-b border-gray-300 bg-gray-100 sticky top-0 z-10 sm:px-6">
         <Link to="/">
           <span className="text-xl font-bold text-blue-600">
             Product Explorer
@@ -22,7 +22,7 @@ export const Layout = () => {
           )}
         </Link>
       </nav>
-      <main>
+      <main className="min-w-0">
         <Outlet />
       </main>
     </div>

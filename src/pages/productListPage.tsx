@@ -90,10 +90,10 @@ export const ProductListPage = () => {
 
   const hasFilters = searchText !== "" || category !== "" || sort !== "";
   return (
-    <div>
+    <div className="min-w-0 overflow-x-clip">
       <div className="sticky top-[60px] z-10 border-b border-gray-200 bg-gray-50/95 backdrop-blur">
-        <div className="flex flex-col gap-3 p-4 sm:flex-row sm:items-center">
-          <div className="relative flex-1">
+        <div className="flex w-full min-w-0 max-w-full flex-col gap-3 p-4 sm:flex-row sm:items-end">
+          <div className="relative w-full min-w-0 max-w-full sm:flex-1">
             <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
             <input
               type="search"
@@ -101,11 +101,11 @@ export const ProductListPage = () => {
               placeholder="Search products..."
               value={searchInput}
               onChange={(e) => setSearchInput(e.target.value)}
-              className="w-full rounded-lg border border-gray-300 bg-white py-2 pl-9 pr-8 text-sm placeholder:text-gray-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/30"
+              className="w-full min-w-0 max-w-full rounded-lg border border-gray-300 bg-white py-2 pl-9 pr-8 text-sm placeholder:text-gray-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/30"
             />
           </div>
 
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+          <div className="flex w-full min-w-0 max-w-full flex-col gap-3 sm:w-auto sm:flex-row sm:items-end">
             <CategoryFilter
               value={category}
               onCategoryChange={handleCategoryChange}
@@ -117,7 +117,7 @@ export const ProductListPage = () => {
                   setSearchInput("");
                   setSearchParams({});
                 }}
-                className="text-sm text-blue-600 underline-offset-2 hover:underline whitespace-nowrap"
+                className="self-start text-sm text-blue-600 underline-offset-2 hover:underline whitespace-nowrap sm:self-auto sm:pb-2"
               >
                 Clear all
               </button>
@@ -133,7 +133,7 @@ export const ProductListPage = () => {
         <p className="p-6">No products found for “{searchText}”.</p>
       ) : (
         <>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 p-6">
+          <div className="grid grid-cols-1 gap-4 p-4 sm:grid-cols-2 sm:gap-6 sm:p-6 lg:grid-cols-3 xl:grid-cols-4">
             {products.map((p) => (
               <ProductCard key={p.id} product={p} />
             ))}

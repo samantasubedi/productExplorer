@@ -50,7 +50,7 @@ export const ProductCard = ({ product }: ProductCardProps) => {
           {product.rating.toFixed(1)}
         </div>
 
-        <div className="mt-auto flex items-center justify-between pt-3">
+        <div className="mt-auto flex flex-wrap items-center justify-between gap-2 pt-3">
           <span className="text-lg font-semibold">
             ${product.price.toFixed(2)}
           </span>
