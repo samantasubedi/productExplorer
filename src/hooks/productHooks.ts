@@ -1,9 +1,19 @@
 import { useCallback, useEffect, useState } from "react";
-import { getProductById, getProducts } from "../api/product";
-import type { Product, ProductDetail } from "../types/product";
+import { getCategory, getProductById, getProducts } from "../api/product";
+import type { Category, Product, ProductDetail } from "../types/product";
 import axios from "axios";
 
-export const useProducts = ({ search }: { search?: string }) => {
+export const useProducts = ({
+  search,
+  category,
+  sortBy,
+  order,
+}: {
+  search?: string;
+  category?: string;
+  sortBy?: string;
+  order?: string;
+}) => {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -18,7 +28,13 @@ export const useProducts = ({ search }: { search?: string }) => {
       setLoading(true);
       setError(null);
       try {
-        const data = await getProducts({ search, signal: controller.signal });
+        const data = await getProducts({
+          category,
+          search,
+          sortBy,
+          order,
+          signal: controller.signal,
+        });
         if (active) setProducts(data);
       } catch (err: unknown) {
         if (!active || axios.isCancel(err)) return;
@@ -36,7 +52,7 @@ export const useProducts = ({ search }: { search?: string }) => {
       active = false;
       controller.abort();
     };
-  }, [search, retryKey]);
+  }, [category, search, retryKey, sortBy, order]);
   return { products, loading, error, retry };
 };
 
@@ -75,10 +91,44 @@ export function useProduct(id: number | null) {
       active = false;
       controller.abort();
     };
-  }, [id, retryKey,isInvalidId]);
+  }, [id, retryKey, isInvalidId]);
   if (isInvalidId) {
     return { product: null, loading: false, error: "Product not found", retry };
   }
 
   return { product, loading, error, retry };
 }
+export const useCategory = () => {
+  const [loading, setLoading] = useState(true);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [error, setError] = useState<string | null>(null);
+  const [retryKey, setRetryKey] = useState(0);
+  const retry = useCallback(() => setRetryKey((k) => k + 1), []);
+
+  useEffect(() => {
+    const controller = new AbortController();
+    let active = true;
+    const fetchCategory = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const data = await getCategory({ signal: controller.signal });
+        if (active) setCategories(data);
+      } catch (err: unknown) {
+        if (!active || axios.isCancel(err)) return;
+        if (active)
+          setError(
+            err instanceof Error ? err.message : "Couldn't fetch categories",
+          );
+      } finally {
+        if (active) setLoading(false);
+      }
+    };
+    fetchCategory();
+    return () => {
+      active = false;
+      controller.abort();
+    };
+  }, [retryKey]);
+  return { loading, error, categories, retry };
+};
