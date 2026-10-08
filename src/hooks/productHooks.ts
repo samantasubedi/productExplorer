@@ -8,15 +8,20 @@ export const useProducts = ({
   category,
   sortBy,
   order,
+  skip,
+  limit,
 }: {
   search?: string;
   category?: string;
   sortBy?: string;
   order?: string;
+  skip?: number;
+  limit?: number;
 }) => {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [total, setTotal] = useState(0);
   const [retryKey, setRetryKey] = useState(0);
   const retry = useCallback(() => setRetryKey((k) => k + 1), []);
 
@@ -28,14 +33,19 @@ export const useProducts = ({
       setLoading(true);
       setError(null);
       try {
-        const data = await getProducts({
+        const { products, total } = await getProducts({
           category,
           search,
           sortBy,
           order,
+          skip,
+          limit,
           signal: controller.signal,
         });
-        if (active) setProducts(data);
+        if (active) {
+          setProducts(products);
+          setTotal(total);
+        }
       } catch (err: unknown) {
         if (!active || axios.isCancel(err)) return;
         setError(
@@ -52,8 +62,8 @@ export const useProducts = ({
       active = false;
       controller.abort();
     };
-  }, [category, search, retryKey, sortBy, order]);
-  return { products, loading, error, retry };
+  }, [category, search, retryKey, sortBy, order, skip, limit]);
+  return { products, loading, error, retry, total };
 };
 
 export function useProduct(id: number | null) {

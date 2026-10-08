@@ -9,8 +9,10 @@ import { CategoryFilter } from "../components/categoryFilter";
 import type { SortValue } from "../types/product";
 import { SortSelect } from "../components/sortSelect";
 import { Search } from "lucide-react";
+import { Pagination } from "../components/pagination";
 
 export const ProductListPage = () => {
+  const LIMIT = 12;
   const [searchParams, setSearchParams] = useSearchParams();
   const searchText = searchParams.get("q") ?? "";
   const [searchInput, setSearchInput] = useState<string>(searchText);
@@ -61,12 +63,31 @@ export const ProductListPage = () => {
       return param;
     });
   };
-  const { products, loading, error, retry } = useProducts({
+  const rawPage = Number(searchParams.get("page") ?? "1");
+  const page = Number.isInteger(rawPage) && rawPage > 0 ? rawPage : 1;
+  const skip = (page - 1) * LIMIT;
+  const handlePageChange = (page: number) => {
+    setSearchParams((prev) => {
+      const param = new URLSearchParams(prev);
+      if (page > 1) {
+        param.set("page", String(page));
+      } else {
+        param.delete("page");
+      }
+      return param;
+    });
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+  const { products, loading, error, retry, total } = useProducts({
     search: searchText,
     category,
     sortBy,
     order,
+    skip,
+    limit: LIMIT,
   });
+  const totalPages = Math.max(1, Math.ceil(total / LIMIT));
+
   const hasFilters = searchText !== "" || category !== "" || sort !== "";
   return (
     <div>
@@ -111,11 +132,18 @@ export const ProductListPage = () => {
       ) : products.length === 0 ? (
         <p className="p-6">No products found for “{searchText}”.</p>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 p-6">
-          {products.map((p) => (
-            <ProductCard key={p.id} product={p} />
-          ))}
-        </div>
+        <>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 p-6">
+            {products.map((p) => (
+              <ProductCard key={p.id} product={p} />
+            ))}
+          </div>
+          <Pagination
+            totalPages={totalPages}
+            onChange={handlePageChange}
+            page={page}
+          />
+        </>
       )}
     </div>
   );

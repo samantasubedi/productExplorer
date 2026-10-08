@@ -9,6 +9,7 @@ import { apiClient } from "./client";
 export const getProducts = async ({
   search,
   limit = 12,
+  skip = 0,
   category,
   sortBy,
   order,
@@ -16,18 +17,21 @@ export const getProducts = async ({
 }: {
   search?: string;
   limit?: number;
+  skip?: number;
   category?: string;
   sortBy?: string;
   order?: string;
   signal?: AxiosRequestConfig["signal"];
-}): Promise<Product[]> => {
+}): Promise<{ products: Product[]; total: number }> => {
   const q = search?.trim();
   const url = q
     ? "products/search"
     : category
       ? `/products/category/${category}`
       : "products";
-  const params :Record<string,string|number>= q ? { q, limit } : { limit };
+  const params: Record<string, string | number> = q
+    ? { q, limit, skip }
+    : { limit, skip };
   if (sortBy && order) {
     params.sortBy = sortBy;
     params.order = order;
@@ -36,7 +40,7 @@ export const getProducts = async ({
     params,
     signal,
   });
-  return response.data.products;
+  return {products:response.data.products,total:response.data.total};
 };
 
 export const getProductById = async ({
