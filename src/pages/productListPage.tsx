@@ -16,6 +16,11 @@ export const ProductListPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const searchText = searchParams.get("q") ?? "";
   const [searchInput, setSearchInput] = useState<string>(searchText);
+  const [prevQ, setPrevQ] = useState(searchText);
+  if (searchText !== prevQ) {
+    setPrevQ(searchText);
+    setSearchInput(searchText);
+  }
   const debouncedInput = useDebouncedValue(searchInput, 400);
   const category = searchParams.get("category") ?? "";
   const rawSort = searchParams.get("sort") ?? "";
@@ -34,17 +39,21 @@ export const ProductListPage = () => {
     if (debouncedInput.trim() !== searchInput.trim()) return;
     const next = debouncedInput.trim();
     if (next === searchText) return;
-    setSearchParams((prev) => {
-      const param = new URLSearchParams(prev);
-      if (next) {
-        param.set("q", next);
-        param.delete("category");
-      } else {
-        param.delete("q");
-      }
-      return param;
-    });
+    setSearchParams(
+      (prev) => {
+        const param = new URLSearchParams(prev);
+        if (next) {
+          param.set("q", next);
+          param.delete("category");
+        } else {
+          param.delete("q");
+        }
+        return param;
+      },
+      { replace: true },
+    );
   }, [debouncedInput, searchText, searchInput, setSearchParams]);
+
   const handleCategoryChange = (slug: string) => {
     setSearchInput("");
     setSearchParams((prev) => {
